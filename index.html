@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAPOZEIRO — Hub do Marítimo</title>
+<meta name="description" content="Ferramentas operacionais para profissionais do setor marítimo. Maré, inteligência de mercado, monitoramento portuário e planejamento de carga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #07111a;
+  --surface:  #0d1d2b;
+  --surface2: #112233;
+  --border:   #1a3048;
+  --border2:  #254060;
+  --text:     #dceef8;
+  --text2:    #7aabcc;
+  --muted:    #3d6080;
+  --signal:   #00ff88;
+  --accent:   #38bdf8;
+  --warning:  #ffd000;
+  --red:      #ff4f4f;
+  --shadow:   rgba(0,0,0,.7);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .028;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── GRID BG ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 32px;
+  height: 54px;
+  background: rgba(7,17,26,.85);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-anchor {
+  width: 28px; height: 28px;
+  color: var(--signal);
+}
+
+.nav-brand {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.nav-brand span { color: var(--signal); }
+
+.nav-sep { flex: 1; }
+
+.nav-links {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: .15s;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+  border-color: rgba(56,189,248,.25);
+  background: rgba(56,189,248,.06);
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--signal);
+  letter-spacing: 2px;
+}
+
+.pulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,.6); opacity: 1; }
+  50% { box-shadow: 0 0 0 5px rgba(0,255,136,0); opacity: .7; }
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px 60px;
+  overflow: hidden;
+}
+
+/* radial glow behind hero */
+.hero-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  width: 700px; height: 700px;
+  background: radial-gradient(ellipse, rgba(56,189,248,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* animated radar ring */
+.radar-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,136,.06);
+  animation: ring-grow 4s ease-out infinite;
+  pointer-events: none;
+}
+.radar-ring:nth-child(2) { animation-delay: 1.3s; width: 800px; height: 800px; }
+.radar-ring:nth-child(3) { animation-delay: 2.6s; width: 1000px; height: 1000px; }
+
+@keyframes ring-grow {
+  0%   { opacity: .4; transform: translate(-50%, -50%) scale(.6); }
+  100% { opacity: 0;  transform: translate(-50%, -50%) scale(1); }
+}
+
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--signal);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeup .6s .2s forwards;
+}
+
+.hero-title {
+  font-size: clamp(52px, 10vw, 110px);
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  line-height: .95;
+  color: var(--text);
+  opacity: 0;
+  animation: fadeup .6s .4s forwards;
+}
+
+.hero-title .hl { color: var(--signal); }
+
+.hero-sub {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text2);
+  letter-spacing: 1px;
+  max-width: 480px;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeup .6s .6s forwards;
+}
+
+.hero-cta {
+  margin-top: 40px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeup .6s .8s forwards;
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--signal);
+  color: #061018;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: .15s;
+  display: inline-block;
+}
+
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-secondary {
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--text2);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: .15s;
+  display: inline-block;
+}
+
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,.06); }
+
+.hero-coords {
+  margin-top: 60px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  opacity: 0;
+  animation: fadeup .6s 1s forwards;
+}
+
+@keyframes fadeup {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION ── */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--signal);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: var(--signal);
+  opacity: .4;
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.section-desc {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 48px;
+}
+
+/* ── TOOL CARDS ── */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.tool-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 24px 24px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  cursor: pointer;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-accent, var(--signal));
+  opacity: .7;
+  transition: opacity .2s;
+}
+
+.tool-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+}
+
+.tool-card:hover::before { opacity: 1; }
+
+.tool-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.tool-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--signal));
+  margin-bottom: 2px;
+}
+
+.tool-name {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+}
+
+.tool-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.tool-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.tool-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--signal);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tool-status .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.tool-arrow {
+  font-size: 16px;
+  color: var(--muted);
+  transition: color .2s, transform .2s;
+}
+
+.tool-card:hover .tool-arrow {
+  color: var(--card-accent, var(--signal));
+  transform: translateX(3px);
+}
+
+/* card accent colors */
+.card-green  { --card-accent: #00ff88; }
+.card-blue   { --card-accent: #38bdf8; }
+.card-yellow { --card-accent: #ffd000; }
+.card-red    { --card-accent: #ff7060; }
+
+/* ── DIVIDER ── */
+.divider {
+  position: relative;
+  z-index: 1;
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 24px;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.stat {
+  flex: 1;
+  min-width: 160px;
+  text-align: center;
+  padding: 12px 24px;
+  border-right: 1px solid var(--border);
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--signal);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.stat-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ── ABOUT ── */
+.about-grid {
+  display: block;
+  max-width: 600px;
+}
+
+@media (max-width: 700px) {
+  .about-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+.about-text p {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 16px;
+  font-family: 'Barlow', sans-serif;
+}
+
+.about-text strong { color: var(--text); }
+
+.about-mono {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 2;
+}
+
+.about-mono .k { color: var(--signal); }
+.about-mono .v { color: var(--accent); }
+.about-mono .c { color: var(--muted); }
+
+/* ── CONTACT ── */
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 32px;
+  max-width: 600px;
+  border-left: 3px solid var(--signal);
+}
+
+.contact-icon { font-size: 28px; flex-shrink: 0; }
+
+.contact-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.contact-email {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: var(--signal);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: opacity .15s;
+}
+
+.contact-email:hover { opacity: .75; }
+
+@media (max-width: 560px) {
+  .contact-card { flex-direction: column; align-items: flex-start; }
+  .contact-card .btn-primary { margin-left: 0 !important; width: 100%; text-align: center; }
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-brand {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+
+.footer-brand span { color: var(--signal); }
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .15s;
+}
+
+.footer-links a:hover { color: var(--text2); }
+
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s, transform .6s;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  nav { padding: 0 16px; }
+  .nav-links { display: none; }
+  .stats-bar { padding: 16px; }
+  .stat { min-width: 120px; }
+  footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg class="nav-anchor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="5" r="3"/>
+      <line x1="12" y1="8" x2="12" y2="22"/>
+      <path d="M5 15 Q12 22 19 15"/>
+      <line x1="8" y1="11" x2="16" y2="11"/>
+    </svg>
+    <span class="nav-brand"><span>VAPO</span>ZEIRO</span>
+  </a>
+  <div class="nav-sep"></div>
+  <ul class="nav-links">
+    <li><a href="#ferramentas">Ferramentas</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="pulse"></div>
+    OPERACIONAL
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+
+  <p class="hero-eyebrow">// Hub do Marítimo Brasileiro</p>
+
+  <h1 class="hero-title">
+    VAPO<span class="hl">ZEIRO</span>
+  </h1>
+
+  <p class="hero-sub">
+    Ferramentas operacionais para profissionais do mar. Maré, inteligência de mercado, monitoramento portuário e planejamento de carga — tudo em um lugar.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#ferramentas" class="btn-primary">Ver ferramentas</a>
+    <a href="#sobre" class="btn-secondary">Sobre o projeto</a>
+  </div>
+
+  <p class="hero-coords" id="clock">23°S 43°W · RIO DE JANEIRO · CARREGANDO...</p>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat reveal">
+    <div class="stat-val">4</div>
+    <div class="stat-lbl">Ferramentas</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-val">4</div>
+    <div class="stat-lbl">Portos monitorados</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-val">24/7</div>
+    <div class="stat-lbl">Disponibilidade</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-val">100%</div>
+    <div class="stat-lbl">Gratuito</div>
+  </div>
+</div>
+
+<!-- FERRAMENTAS -->
+<section id="ferramentas">
+  <p class="section-label reveal">01 · Ferramentas</p>
+  <h2 class="section-title reveal">Arsenal do marítimo</h2>
+  <p class="section-desc reveal">Cada ferramenta foi construída para resolver um problema real de quem trabalha no setor.</p>
+
+  <div class="tools-grid">
+
+    <!-- Painel de Maré -->
+    <a href="https://mare.vapozeiro.com.br" class="tool-card card-blue reveal">
+      <div class="tool-icon">🌊</div>
+      <div>
+        <div class="tool-tag">Náutico</div>
+        <div class="tool-name">Painel de Maré</div>
+      </div>
+      <p class="tool-desc">
+        Baixa-mar, preamar, tendência e amplitude em tempo real. Consulta rápida para qualquer ETA nos portos do Rio.
+      </p>
+      <div class="tool-meta">
+        <span class="tool-status"><span class="dot"></span> ONLINE</span>
+        <span class="tool-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Vapo News -->
+    <a href="https://news.vapozeiro.com.br" class="tool-card card-green reveal">
+      <div class="tool-icon">📡</div>
+      <div>
+        <div class="tool-tag">Inteligência</div>
+        <div class="tool-name">VAPO News</div>
+      </div>
+      <p class="tool-desc">
+        Radar marítimo com as principais notícias do setor, selecionadas e organizadas para profissionais. Gerado automaticamente.
+      </p>
+      <div class="tool-meta">
+        <span class="tool-status"><span class="dot"></span> ONLINE</span>
+        <span class="tool-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Sentinela -->
+    <a href="https://sentinela.vapozeiro.com.br" class="tool-card card-yellow reveal">
+      <div class="tool-icon">👁️</div>
+      <div>
+        <div class="tool-tag">Monitoramento</div>
+        <div class="tool-name">Sentinela</div>
+      </div>
+      <p class="tool-desc">
+        Monitor em tempo real de embarcações nos portos do Rio. Alertas de pré-pauta e acompanhamento simultâneo de 4 portos.
+      </p>
+      <div class="tool-meta">
+        <span class="tool-status"><span class="dot"></span> ONLINE</span>
+        <span class="tool-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Plano de Carga -->
+    <a href="https://plano.vapozeiro.com.br" class="tool-card card-red reveal">
+      <div class="tool-icon">⚓</div>
+      <div>
+        <div class="tool-tag">Operacional</div>
+        <div class="tool-name">Plano de Carga</div>
+      </div>
+      <p class="tool-desc">
+        Planejamento visual de carga no convés. Importa o manifesto PDF e distribui cargas automaticamente por destino.
+      </p>
+      <div class="tool-meta">
+        <span class="tool-status"><span class="dot"></span> ONLINE</span>
+        <span class="tool-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SOBRE -->
+<section id="sobre">
+  <p class="section-label reveal">02 · Sobre</p>
+  <h2 class="section-title reveal">Feito por quem é do mar</h2>
+
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        O <strong>Vapozeiro</strong> nasceu da necessidade real de quem trabalha no setor marítimo brasileiro. Ferramentas dispersas, sistemas lentos, informação difícil de acessar na hora H.
+      </p>
+      <p>
+        Cada aplicação foi construída do zero pensando no uso prático: no píer, a bordo, no escritório. Sem cadastro, sem instalação, direto no navegador.
+      </p>
+      <p>
+        O projeto é <strong>gratuito e aberto</strong>. Se você tem uma ideia de ferramenta que faz falta no dia a dia marítimo, <a href="#contato" style="color:var(--signal);text-decoration:underline;text-underline-offset:3px;">entre em contato</a>.
+      </p>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- FALE CONOSCO -->
+<hr class="divider">
+<section id="contato">
+  <p class="section-label reveal">03 · Contato</p>
+  <h2 class="section-title reveal">Fale conosco</h2>
+  <p class="section-desc reveal">Sugestão de ferramenta, bug, parceria ou só um oi — a gente responde.</p>
+
+  <div class="contact-card reveal">
+    <div class="contact-icon">✉️</div>
+    <div class="contact-info">
+      <div class="contact-label">E-MAIL</div>
+      <a href="mailto:vapozeiro@outlook.com.br" class="contact-email">vapozeiro@outlook.com.br</a>
+    </div>
+    <a href="mailto:vapozeiro@outlook.com.br" class="btn-primary" style="margin-left:auto;white-space:nowrap;flex-shrink:0;">Enviar e-mail</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand"><span>VAPO</span>ZEIRO</div>
+  <ul class="footer-links">
+    <li><a href="https://mare.vapozeiro.com.br">Maré</a></li>
+    <li><a href="https://news.vapozeiro.com.br">News</a></li>
+    <li><a href="https://sentinela.vapozeiro.com.br">Sentinela</a></li>
+    <li><a href="https://plano.vapozeiro.com.br">Plano de Carga</a></li>
+  </ul>
+  <div class="footer-copy" id="footerYear">© 2025 · vapozeiro.com.br</div>
+</footer>
+
+<script>
+// Clock + coords
+function updateClock(){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    `23°S 43°W · RIO DE JANEIRO · ${hh}:${mm}:${ss} UTC-3`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Footer year
+document.getElementById('footerYear').textContent =
+  `© ${new Date().getFullYear()} · vapozeiro.com.br`;
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
