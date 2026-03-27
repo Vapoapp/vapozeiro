@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google tag (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9ZWN759NS6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9ZWN759NS6');
+
+  function trackToolClick(toolName, destination) {
+    gtag('event', 'click_tool', {
+      tool_name: toolName,
+      destination_url: destination,
+      page_location: window.location.href
+    });
+  }
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VAPOZEIRO — Hub do Marítimo</title>
-<meta name="description" content="Ferramentas operacionais para profissionais do setor marítimo. Maré, inteligência de mercado, monitoramento portuário e planejamento de carga.">
+<meta name="description" content="Ferramentas operacionais para profissionais do setor marítimo. Maré, inteligência de mercado, monitoramento portuário, planejamento de carga e consulta simultânea em todas as NORMAMs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -684,7 +702,7 @@ footer {
   </h1>
 
   <p class="hero-sub">
-    Ferramentas operacionais para profissionais do mar. Maré, inteligência de mercado, monitoramento portuário e planejamento de carga — tudo em um lugar.
+    Ferramentas operacionais para profissionais do mar. Maré, inteligência de mercado, monitoramento portuário, planejamento de carga e consulta simultânea em todas as NORMAMs — tudo em um lugar.
   </p>
 
   <div class="hero-cta">
@@ -698,7 +716,7 @@ footer {
 <!-- STATS -->
 <div class="stats-bar">
   <div class="stat reveal">
-    <div class="stat-val">4</div>
+    <div class="stat-val">5</div>
     <div class="stat-lbl">Ferramentas</div>
   </div>
   <div class="stat reveal">
@@ -724,7 +742,7 @@ footer {
   <div class="tools-grid">
 
     <!-- Painel de Maré -->
-    <a href="https://mare.vapozeiro.com.br" class="tool-card card-blue reveal">
+    <a href="http://vapozeiro.com.br/mare/" class="tool-card card-blue reveal" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('mare', 'http://vapozeiro.com.br/mare/')">
       <div class="tool-icon">🌊</div>
       <div>
         <div class="tool-tag">Náutico</div>
@@ -740,7 +758,7 @@ footer {
     </a>
 
     <!-- Vapo News -->
-    <a href="https://news.vapozeiro.com.br" class="tool-card card-green reveal">
+    <a href="http://vapozeiro.com.br/vaponews/" class="tool-card card-green reveal" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('vaponews', 'http://vapozeiro.com.br/vaponews/')">
       <div class="tool-icon">📡</div>
       <div>
         <div class="tool-tag">Inteligência</div>
@@ -756,7 +774,7 @@ footer {
     </a>
 
     <!-- Sentinela -->
-    <a href="https://sentinela.vapozeiro.com.br" class="tool-card card-yellow reveal">
+    <a href="http://vapozeiro.com.br/sentinela/" class="tool-card card-yellow reveal" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('sentinela', 'http://vapozeiro.com.br/sentinela/')">
       <div class="tool-icon">👁️</div>
       <div>
         <div class="tool-tag">Monitoramento</div>
@@ -772,7 +790,7 @@ footer {
     </a>
 
     <!-- Plano de Carga -->
-    <a href="https://plano.vapozeiro.com.br" class="tool-card card-red reveal">
+    <a href="http://vapozeiro.com.br/plano/" class="tool-card card-red reveal" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('plano', 'http://vapozeiro.com.br/plano/')">
       <div class="tool-icon">⚓</div>
       <div>
         <div class="tool-tag">Operacional</div>
@@ -780,6 +798,23 @@ footer {
       </div>
       <p class="tool-desc">
         Planejamento visual de carga no convés. Importa o manifesto PDF e distribui cargas automaticamente por destino.
+      </p>
+      <div class="tool-meta">
+        <span class="tool-status"><span class="dot"></span> ONLINE</span>
+        <span class="tool-arrow">→</span>
+      </div>
+    </a>
+
+
+    <!-- Buscador de NORMAMs -->
+    <a href="https://buscadornormam.onrender.com" class="tool-card card-blue reveal" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('normams', 'https://buscadornormam.onrender.com')">
+      <div class="tool-icon">📘</div>
+      <div>
+        <div class="tool-tag">Consulta</div>
+        <div class="tool-name">Buscador de NORMAMs</div>
+      </div>
+      <p class="tool-desc">
+        Consulta simultânea em todas as normas da Marinha. Pesquise um tema uma única vez e veja o que cada NORMAM diz sobre o assunto.
       </p>
       <div class="tool-meta">
         <span class="tool-status"><span class="dot"></span> ONLINE</span>
@@ -835,10 +870,11 @@ footer {
 <footer>
   <div class="footer-brand"><span>VAPO</span>ZEIRO</div>
   <ul class="footer-links">
-    <li><a href="https://mare.vapozeiro.com.br">Maré</a></li>
-    <li><a href="https://news.vapozeiro.com.br">News</a></li>
-    <li><a href="https://sentinela.vapozeiro.com.br">Sentinela</a></li>
-    <li><a href="https://plano.vapozeiro.com.br">Plano de Carga</a></li>
+    <li><a href="http://vapozeiro.com.br/mare/" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('mare_footer', 'http://vapozeiro.com.br/mare/')">Maré</a></li>
+    <li><a href="http://vapozeiro.com.br/vaponews/" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('vaponews_footer', 'http://vapozeiro.com.br/vaponews/')">News</a></li>
+    <li><a href="http://vapozeiro.com.br/sentinela/" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('sentinela_footer', 'http://vapozeiro.com.br/sentinela/')">Sentinela</a></li>
+    <li><a href="http://vapozeiro.com.br/plano/" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('plano_footer', 'http://vapozeiro.com.br/plano/')">Plano de Carga</a></li>
+    <li><a href="https://buscadornormam.onrender.com" target="_blank" rel="noopener noreferrer" onclick="trackToolClick('normams_footer', 'https://buscadornormam.onrender.com')">NORMAMs</a></li>
   </ul>
   <div class="footer-copy" id="footerYear">© 2025 · vapozeiro.com.br</div>
 </footer>
